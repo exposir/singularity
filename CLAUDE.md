@@ -297,7 +297,12 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 
 # Project Map (L1)
 
-> Singularity - 天生简单，天生可追踪的前端状态管理库
+> **⚠️ 项目状态：开发暂停** (2026-01-09)
+>
+> 完成 Week 1-2 核心实现后经评估，因差异化不足决定暂停开发。
+> 详见 [README.md#项目评估与暂停说明](./README.md#项目评估与暂停说明)
+
+> Singularity - 天生简单，天生可追踪的前端状态管理库（学习项目）
 
 TypeScript + React + pnpm workspace
 
