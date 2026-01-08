@@ -6,6 +6,8 @@
  */
 
 let batchDepth = 0;
+// 使用 Set 收集待执行的更新通知
+// Set 保证插入顺序（ES2015+），确保更新按照 schedulePendingUpdate 调用顺序执行
 const pendingUpdates = new Set<() => void>();
 
 export function batch(fn: () => void): void {
@@ -15,6 +17,7 @@ export function batch(fn: () => void): void {
   } finally {
     batchDepth--;
     if (batchDepth === 0) {
+      // 将 Set 转为数组并执行，顺序由 Set 插入顺序保证
       const updates = [...pendingUpdates];
       pendingUpdates.clear();
       updates.forEach((update) => update());

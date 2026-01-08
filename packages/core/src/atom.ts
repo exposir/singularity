@@ -35,6 +35,7 @@ export function atom<T>(initial: T) {
   let value = initial;
   const listeners = new Set<Listener>();
   const history: HistoryEntry<T>[] = [];
+  let historyIndex = -1; // 当前历史位置（-1 表示初始状态）
 
   const notify = () => {
     listeners.forEach((fn) => fn());
@@ -57,8 +58,52 @@ export function atom<T>(initial: T) {
 
       // 开发模式：记录历史
       if (process.env.NODE_ENV !== 'production') {
+        // 如果不在历史末尾，丢弃后续历史（分支被覆盖）
+        if (historyIndex < history.length - 1) {
+          history.splice(historyIndex + 1);
+        }
         history.push({ from: value, to: newValue, time: Date.now() });
-        if (history.length > 100) history.shift(); // 限制长度
+        if (history.length > 100) {
+          history.shift(); // 限制长度
+        } else {
+          historyIndex++;
+        }
+      }
+
+      value = newValue;
+
+      if (isBatching()) {
+        schedulePendingUpdate(notify);
+      } else {
+        notify();
+      }
+    },
+
+    /**
+     * 直接设置值，不进行函数式更新判断
+     * 用于解决 T 本身是函数类型时的歧义问题
+     *
+     * @example
+     * const onClick = atom<() => void>(() => console.log('A'));
+     * onClick.setRaw(() => console.log('B')); // 正确设置新函数
+     */
+    setRaw(newValue: T) {
+      assertWritable();
+
+      if (Object.is(value, newValue)) return;
+
+      // 开发模式：记录历史
+      if (process.env.NODE_ENV !== 'production') {
+        // 如果不在历史末尾，丢弃后续历史（分支被覆盖）
+        if (historyIndex < history.length - 1) {
+          history.splice(historyIndex + 1);
+        }
+        history.push({ from: value, to: newValue, time: Date.now() });
+        if (history.length > 100) {
+          history.shift(); // 限制长度
+        } else {
+          historyIndex++;
+        }
       }
 
       value = newValue;
@@ -75,21 +120,61 @@ export function atom<T>(initial: T) {
       return () => listeners.delete(listener);
     },
 
+    /**
+     * 获取完整历史记录（仅开发模式）
+     */
     history() {
       return [...history];
     },
 
-    restore(index: number) {
+    /**
+     * 撤销到上一个状态
+     */
+    undo() {
       assertWritable();
-      const entry = history[index];
-      if (!entry) return;
+      if (historyIndex < 0) return; // 没有可撤销的历史
 
-      value = entry.from; // restore 不应新增历史记录
+      const entry = history[historyIndex];
+      value = entry.from;
+      historyIndex--;
+
       if (isBatching()) {
         schedulePendingUpdate(notify);
       } else {
         notify();
       }
+    },
+
+    /**
+     * 重做到下一个状态
+     */
+    redo() {
+      assertWritable();
+      if (historyIndex >= history.length - 1) return; // 没有可重做的历史
+
+      const entry = history[historyIndex + 1];
+      value = entry.to;
+      historyIndex++;
+
+      if (isBatching()) {
+        schedulePendingUpdate(notify);
+      } else {
+        notify();
+      }
+    },
+
+    /**
+     * 是否可以撤销
+     */
+    canUndo() {
+      return historyIndex >= 0;
+    },
+
+    /**
+     * 是否可以重做
+     */
+    canRedo() {
+      return historyIndex < history.length - 1;
     },
   };
 }

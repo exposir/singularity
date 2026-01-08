@@ -79,3 +79,99 @@ const scheduleRun = () => {
 ---
 
 🎯 **里程碑 2 达成**
+
+---
+
+## 代码审查与修复 (2026-01-09)
+
+### 发现的问题
+
+完成里程碑 2 后进行深度代码审查，发现以下问题：
+
+#### 1. 重复订阅内存泄漏 (trace.ts) - 严重
+
+**问题**: 同一 computed/effect 多次读取同一 atom 时产生 N 个重复订阅
+
+```typescript
+const count = atom(0);
+const bad = computed(() => {
+  const a = count.get(); // 订阅 #1
+  const b = count.get(); // 订阅 #2（重复！）
+  return a + b;
+});
+```
+
+**影响**: 内存浪费 + 重复通知
+
+**修复**: Tracker 添加 `trackedNodes` Set 进行去重
+
+```typescript
+export class Tracker {
+  private trackedNodes = new Set<any>(); // 去重集合
+
+  track(node: any, unsubscribe: Unsubscribe): void {
+    if (this.trackedNodes.has(node)) return; // 防止重复订阅
+    this.trackedNodes.add(node);
+    this.subscriptions.push(unsubscribe);
+  }
+
+  cleanup(): void {
+    this.subscriptions.forEach((unsub) => unsub());
+    this.subscriptions = [];
+    this.trackedNodes.clear();
+  }
+}
+```
+
+#### 2. 函数类型状态的类型安全 (atom.ts) - 严重
+
+**问题**: 当 T 是函数类型时，无法区分"要设置的函数"和"更新器函数"
+
+```typescript
+const onClick = atom<() => void>(() => console.log('A'));
+onClick.set(() => console.log('B')); // 💥 B 被当成更新器调用
+```
+
+**修复**: 新增 `setRaw(value: T)` 方法，直接设置值不做函数判断
+
+#### 3. 历史管理 API 改进 (atom.ts)
+
+**问题**: `restore(index)` 语义混乱
+
+**修复**: 新增更直观的 API
+- `undo()` - 撤销到上一个状态
+- `redo()` - 重做到下一个状态
+- `canUndo()` - 是否可撤销
+- `canRedo()` - 是否可重做
+
+### 文档改进
+
+1. **batch.ts** - 添加 Set 执行顺序保证的注释
+2. **computed.ts** - 添加惰性订阅的注意事项
+
+### 新增测试
+
+- `should handle function type state with setRaw` - 验证 setRaw 处理函数类型
+- `should not create duplicate subscriptions` - 验证去重机制
+
+### 更新后测试结果
+
+```
+ ✓ __tests__/atom.test.ts (8 tests)     ← 7→8
+ ✓ __tests__/batch.test.ts (3 tests)
+ ✓ __tests__/computed.test.ts (9 tests) ← 8→9
+ ✓ __tests__/effect.test.ts (7 tests)
+
+ Test Files  4 passed (4)
+      Tests  27 passed (27)             ← 25→27
+```
+
+### 修复的文件
+
+```
+packages/core/src/
+├── trace.ts      [FIXED] 添加去重机制
+├── atom.ts       [IMPROVED] +setRaw, +undo/redo API
+├── computed.ts   [DOC] 添加惰性说明
+└── batch.ts      [DOC] 添加顺序保证说明
+```

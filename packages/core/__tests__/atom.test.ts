@@ -37,14 +37,36 @@ describe('atom', () => {
     expect(count.history()).toHaveLength(2);
   });
 
-  it('should restore without adding history', () => {
+  it('should support undo/redo', () => {
     const count = atom(0);
+    expect(count.canUndo()).toBe(false);
+    expect(count.canRedo()).toBe(false);
+
     count.set(1);
+    expect(count.canUndo()).toBe(true);
+    expect(count.canRedo()).toBe(false);
+
     count.set(2);
-    const before = count.history().length;
-    count.restore(0);
+    expect(count.get()).toBe(2);
+    expect(count.canUndo()).toBe(true);
+
+    count.undo();
+    expect(count.get()).toBe(1);
+    expect(count.canUndo()).toBe(true);
+    expect(count.canRedo()).toBe(true);
+
+    count.undo();
     expect(count.get()).toBe(0);
-    expect(count.history()).toHaveLength(before);
+    expect(count.canUndo()).toBe(false);
+    expect(count.canRedo()).toBe(true);
+
+    count.redo();
+    expect(count.get()).toBe(1);
+    expect(count.canRedo()).toBe(true);
+
+    count.redo();
+    expect(count.get()).toBe(2);
+    expect(count.canRedo()).toBe(false);
   });
 
   it('should not notify if value unchanged (Object.is)', () => {
@@ -60,5 +82,20 @@ describe('atom', () => {
     const b = atom(2);
     expect(a.id).not.toBe(b.id);
     expect(a.id).toMatch(/^atom:\d+$/);
+  });
+
+  it('should handle function type state with setRaw', () => {
+    const onClick = atom<() => string>(() => 'A');
+    expect(onClick.get()()).toBe('A');
+
+    // set 会将函数当作更新器
+    onClick.set(() => () => 'B');
+    expect(onClick.get()()).toBe('B');
+
+    // setRaw 直接设置函数值
+    const newFn = () => 'C';
+    onClick.setRaw(newFn);
+    expect(onClick.get()).toBe(newFn);
+    expect(onClick.get()()).toBe('C');
   });
 });

@@ -105,4 +105,27 @@ describe('computed', () => {
     expect(sum.get()).toBe(30);
     expect(computeCount).toBe(1); // batch 后只重算一次
   });
+
+  it('should not create duplicate subscriptions', () => {
+    const count = atom(0);
+    let invalidateCount = 0;
+
+    const double = computed(() => {
+      // 多次读取同一个 atom
+      const a = count.get();
+      const b = count.get();
+      const c = count.get();
+      return a + b + c;
+    });
+
+    // 手动模拟 tracker 的 invalidate 计数
+    double.subscribe(() => invalidateCount++);
+
+    // 建立依赖
+    double.get();
+
+    // atom 变化时，应该只触发一次 invalidate
+    count.set(1);
+    expect(invalidateCount).toBe(1);
+  });
 });

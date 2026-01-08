@@ -70,6 +70,10 @@ export function computed<T>(read: () => T) {
       return cachedValue;
     },
 
+    /**
+     * 订阅变化通知
+     * 注意：computed 是惰性的，subscribe 后需要至少调用一次 get() 来建立依赖
+     */
     subscribe(listener: () => void) {
       listeners.add(listener);
       return () => listeners.delete(listener);

@@ -23,17 +23,21 @@ let currentKind: TrackingKind | null = null;
 /**
  * Tracker 管理依赖订阅的生命周期
  * 每次重新计算前清理旧订阅，避免内存泄漏
+ * 使用 Set 去重，防止同一依赖被多次订阅
  */
 export class Tracker {
   private subscriptions: Unsubscribe[] = [];
+  private trackedNodes = new Set<any>(); // 已追踪的节点，用于去重
   private onInvalidate: OnInvalidate;
 
   constructor(onInvalidate: OnInvalidate) {
     this.onInvalidate = onInvalidate;
   }
 
-  // 记录一个新的订阅
-  track(unsubscribe: Unsubscribe): void {
+  // 记录一个新的订阅（带去重）
+  track(node: any, unsubscribe: Unsubscribe): void {
+    if (this.trackedNodes.has(node)) return; // 防止重复订阅
+    this.trackedNodes.add(node);
     this.subscriptions.push(unsubscribe);
   }
 
@@ -46,6 +50,7 @@ export class Tracker {
   cleanup(): void {
     this.subscriptions.forEach((unsub) => unsub());
     this.subscriptions = [];
+    this.trackedNodes.clear(); // 清空去重集合
   }
 }
 
@@ -76,6 +81,6 @@ export function trackDependency(node: { subscribe: (fn: () => void) => () => voi
     const unsubscribe = node.subscribe(() => {
       tracker.invalidate();
     });
-    tracker.track(unsubscribe);
+    tracker.track(node, unsubscribe); // 传入 node 用于去重
   }
 }
