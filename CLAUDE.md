@@ -299,9 +299,10 @@ Keep the map aligned with the terrain, or the terrain will be lost.
 
 > Singularity - 天生简单，天生可追踪的前端状态管理库
 
-TypeScript + React
+TypeScript + React + pnpm workspace
 
 <directory>
+packages/ - Monorepo 包目录 (2 子包: core, react)
 doc/ - 核心设计文档库 (8 文件: vision, roadmap, specs, guide...)
 guides/ - 开发者实用指南 (1 文件: AI 配置指南)
 .antigravity/ - Antigravity AI 配置 (1 文件: rules)
@@ -309,7 +310,9 @@ guides/ - 开发者实用指南 (1 文件: AI 配置指南)
 </directory>
 
 <config>
-package.json - NPM 包配置 (name: singularity)
+package.json - NPM 包配置 (monorepo root)
+pnpm-workspace.yaml - pnpm workspace 配置
+tsconfig.json - TypeScript 根配置
 README.md - 项目入口与快速开始
 AGENTS.md - 通用 AI Agent 指令
 CLAUDE.md - GEB 分形文档协议定义 (本文件)
@@ -319,6 +322,7 @@ CLAUDE.md - GEB 分形文档协议定义 (本文件)
 
 | 目录            | L2 文档                               | 职责                         |
 | :-------------- | :------------------------------------ | :--------------------------- |
+| `packages/`     | [CLAUDE.md](./packages/CLAUDE.md)     | @singularity/core + react    |
 | `doc/`          | [CLAUDE.md](./doc/CLAUDE.md)          | 设计规范、API 规格、竞品分析 |
 | `guides/`       | [CLAUDE.md](./guides/CLAUDE.md)       | 操作手册、最佳实践           |
 | `.antigravity/` | [CLAUDE.md](./.antigravity/CLAUDE.md) | Antigravity 专属规则         |
