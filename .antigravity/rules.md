@@ -10,6 +10,7 @@
 - Cursor → .cursor/rules.md 或 .cursorrules
 - Windsurf → .windsurfrules
 - Google Gemini → GEMINI.md
+- Google Antigravity → .antigravity/rules.md
 - OpenAI → AGENTS.md 或 CODEX.md
 
 **核心职责**：作为 AI Agent 进入项目时的第一读物，提供项目结构、技术栈、架构决策、模块职责等关键上下文。无论你是哪个 AI，看到 CLAUDE.md 就把它当作"项目架构说明书"来理解。
