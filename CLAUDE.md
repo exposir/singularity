@@ -275,26 +275,33 @@ Phase 3 生根:
 Keep the map aligned with the terrain, or the terrain will be lost.
 </INVOCATION>
 
-# Project Map (Self)
+# Project Map (L1)
+
+> Singularity - 天生简单，天生可追踪的前端状态管理库
+
+TypeScript + React
 
 <directory>
-/ - prompt library sources
-algorithms/ - Algorithm demos and implementations
-guides/ - User guides and best practices
+doc/ - 核心设计文档库 (8 文件: vision, roadmap, specs, guide...)
+guides/ - 开发者实用指南 (1 文件: AI 配置指南)
+.antigravity/ - Antigravity AI 配置 (1 文件: rules)
+.github/ - GitHub 平台配置 (1 文件: copilot-instructions)
 </directory>
 
-# /
+<config>
+package.json - NPM 包配置 (name: singularity)
+README.md - 项目入口与快速开始
+AGENTS.md - 通用 AI Agent 指令
+CLAUDE.md - GEB 分形文档协议定义 (本文件)
+</config>
 
-> L2 | Parent: Self
+## 模块导航
 
-algorithms/: Algorithms module.
-guides/: User guides module.
-AGENTS.md: Universal AI Agent Directives.
-AI_CONFIG_GUIDE.md: AI Config File Locations Guide.
-CLAUDE.md: Protocol Definition.
-package.json: NPM package config (singularity).
-README.md: Project Entry.
-CODEX.md: Codex specific rules.
-.antigravity/rules.md: Antigravity rules.
+| 目录            | L2 文档                               | 职责                         |
+| :-------------- | :------------------------------------ | :--------------------------- |
+| `doc/`          | [CLAUDE.md](./doc/CLAUDE.md)          | 设计规范、API 规格、竞品分析 |
+| `guides/`       | [CLAUDE.md](./guides/CLAUDE.md)       | 操作手册、最佳实践           |
+| `.antigravity/` | [CLAUDE.md](./.antigravity/CLAUDE.md) | Antigravity 专属规则         |
+| `.github/`      | [CLAUDE.md](./.github/CLAUDE.md)      | GitHub Copilot 配置          |
 
 [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
