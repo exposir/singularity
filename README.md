@@ -55,6 +55,8 @@ console.log(count.history());
 - [**核心 API 规格**](./doc/specs-core.md): `atom`, `computed`, `effect` 等核心 API 的详细规范。
 - [**开发指南**](./doc/development-guide.md): 项目开发、构建与测试的具体指引。
 - [**生态全景分析**](./doc/landscape.md): 与竞品（Zustand, Jotai, MobX 等）的深度对比。
+- [**术语表与 FAQ**](./doc/terminology-qa.md): 核心概念定义与常见问题解答。
+- [**评审与分析**](./doc/reviews.md): 第三方视角的项目评审报告。
 
 ## 核心哲学
 
