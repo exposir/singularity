@@ -57,6 +57,45 @@ count.restore(0); // 恢复到某个历史状态
 
 批量执行多个状态更新，结束后统一触发通知。
 
+### `computed<T>(read: () => T)`
+
+创建一个派生状态，自动追踪依赖并缓存结果。
+
+```typescript
+const count = atom(0);
+const double = computed(() => count.get() * 2);
+
+console.log(double.get()); // 0
+count.set(5);
+console.log(double.get()); // 10
+```
+
+| 方法            | 说明                           |
+| :-------------- | :----------------------------- |
+| `get()`         | 获取派生值（惰性计算，有缓存） |
+| `subscribe(fn)` | 订阅变化                       |
+
+### `effect(fn)`
+
+创建一个副作用，依赖变化时自动重新执行。
+
+```typescript
+const count = atom(0);
+
+const e = effect(() => {
+  console.log("count is", count.get());
+  return () => console.log("cleanup");
+});
+
+count.set(1); // 输出: cleanup, count is 1
+
+e.dispose(); // 停止监听
+```
+
+| 方法        | 说明                   |
+| :---------- | :--------------------- |
+| `dispose()` | 停止监听并执行 cleanup |
+
 ## License
 
 MIT

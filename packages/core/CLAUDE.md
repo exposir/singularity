@@ -6,24 +6,24 @@
 
 ## 成员清单
 
-| 文件           | 职责                                        |
-| :------------- | :------------------------------------------ |
-| `src/atom.ts`  | 原子状态：get/set/subscribe/history/restore |
-| `src/batch.ts` | 批处理：收集多次更新，统一通知              |
-| `src/trace.ts` | 依赖追踪：Tracker 管理订阅生命周期          |
-| `src/index.ts` | 入口文件：统一导出公共 API                  |
+| 文件              | 职责                                             |
+| :---------------- | :----------------------------------------------- |
+| `src/atom.ts`     | 原子状态：get/set/subscribe/history/restore      |
+| `src/computed.ts` | 派生状态：惰性计算 + 缓存 + 循环依赖检测         |
+| `src/effect.ts`   | 副作用：依赖变化时自动重执行 + cleanup + dispose |
+| `src/batch.ts`    | 批处理：收集多次更新，统一通知                   |
+| `src/trace.ts`    | 依赖追踪：Tracker 管理订阅生命周期               |
+| `src/index.ts`    | 入口文件：统一导出公共 API                       |
 
 ## 测试覆盖
 
-| 文件                      | 用例数 | 状态 |
-| :------------------------ | :----- | :--- |
-| `__tests__/atom.test.ts`  | 7      | ✅   |
-| `__tests__/batch.test.ts` | 3      | ✅   |
+| 文件                         | 用例数 | 状态 |
+| :--------------------------- | :----- | :--- |
+| `__tests__/atom.test.ts`     | 7      | ✅   |
+| `__tests__/batch.test.ts`    | 3      | ✅   |
+| `__tests__/computed.test.ts` | 8      | ✅   |
+| `__tests__/effect.test.ts`   | 7      | ✅   |
 
-## 待实现（Week 2）
-
-- [ ] `src/computed.ts` - 派生状态
-- [ ] `src/effect.ts` - 副作用
-- [ ] `__tests__/computed.test.ts`
+**总计：25 tests passed**
 
 [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
