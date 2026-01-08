@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 无外部依赖
+[OUTPUT]: 第三方评论与分析文档
+[POS]: doc/ 的外部反馈收集
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # 第三方评论与分析
 
 > 本文件用于收集和整理对 Singularity 项目的第三方评论、分析和反馈。
@@ -278,13 +285,13 @@ Level 3 (专业)：atomSync, createStore        → 协作与 SSR
 
 ```typescript
 // React 18 官方推荐的外部状态订阅方式
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from "react";
 
 export function useAtom<T>(atom: Atom<T>): T {
   return useSyncExternalStore(
     atom.subscribe, // 订阅函数
     atom.get, // 客户端快照
-    atom.get, // 服务端快照 (SSR)
+    atom.get // 服务端快照 (SSR)
   );
 }
 ```
@@ -299,7 +306,7 @@ export function useAtom<T>(atom: Atom<T>): T {
 
 ```typescript
 // 对于不需要并发特性的场景，提供更高性能的直接绑定
-import { useAtomFast } from '@singularity/react/fast';
+import { useAtomFast } from "@singularity/react/fast";
 
 // ⚠️ 文档警告：此模式不保证与 Suspense/Transition 兼容
 const value = useAtomFast(atom);
@@ -646,7 +653,7 @@ export function useAtom<T>(atom: Atom<T>): T {
   return useSyncExternalStore(
     atom.subscribe,
     atom.get,
-    atom.get, // SSR
+    atom.get // SSR
   );
 }
 ```
@@ -703,22 +710,26 @@ export function useAtom<T>(atom: Atom<T>): T {
 ### 六、执行建议
 
 1. **Week 1-4：Core MVP**
+
    - 实现 atom/computed/batch/effect
    - React useAtom (useSyncExternalStore)
    - 建立基准测试框架
    - **验证 React 并发兼容性**
 
 2. **Week 5-8：Async MVP**
+
    - 实现 atomAsync
    - 缓存/取消/去重语义
    - Suspense 集成
 
 3. **Week 9-12：Machine MVP**
+
    - 轻量状态机
    - entry/exit 生命周期
    - 与 atom 集成
 
 4. **Week 13-16：v1.0 发布**
+
    - DevTools 原型
    - 完整文档
    - 性能报告
@@ -825,11 +836,13 @@ Singularity 是一个**有价值但需要务实执行**的项目。
 #### 为什么难做到最优？
 
 1. **功能越多，性能开销越大**
+
    - TraceEvent 采集有开销
    - 依赖图维护有开销
    - 类型安全的泛型有运行时成本
 
 2. **useSyncExternalStore 的代价**
+
    - 为了 React 并发安全，牺牲了部分性能
    - Legend-State 选择绕过它，性能更好但有 tearing 风险
 
@@ -914,9 +927,9 @@ effect(() => {
 
 ```typescript
 // 这套组合已经非常成熟
-import { create } from 'zustand'; // 本地状态
-import { useQuery } from '@tanstack/react-query'; // 服务端状态
-import { useMachine } from '@xstate/react'; // 状态机
+import { create } from "zustand"; // 本地状态
+import { useQuery } from "@tanstack/react-query"; // 服务端状态
+import { useMachine } from "@xstate/react"; // 状态机
 
 // 缺点：3 套心智模型
 // 优点：每个库都是最佳实践，生态成熟，社区活跃

@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 无外部依赖
+[OUTPUT]: doc 目录入口文档
+[POS]: doc/ 的导航页，汇总所有设计文档
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # Singularity 状态管理库
 
 > **天生简单，天生可追踪**
@@ -34,8 +41,7 @@ Singularity 是一个极简的 React 状态管理库，结合了 Zustand 的简�
 | 给 Zustand 加细粒度 | ❌ **不能**      | 架构决定（单 store + selector） |
 | 给 Jotai 简化 API   | ❌ **不能**      | 原子组合是核心设计              |
 
-> **Zustand 的「非细粒度」是架构问题，不是功能问题。**
-> **Jotai 的「原子组合」是设计哲学，不是可选配置。**
+> **Zustand 的「非细粒度」是架构问题，不是功能问题。** > **Jotai 的「原子组合」是设计哲学，不是可选配置。**
 
 Singularity 从底层架构同时支持这三个特性，这是现有库**无法通过插件实现**的。
 
@@ -52,8 +58,8 @@ npm install @singularity/core @singularity/react
 ### 基本用法
 
 ```typescript
-import { atom } from '@singularity/core';
-import { useAtom } from '@singularity/react';
+import { atom } from "@singularity/core";
+import { useAtom } from "@singularity/react";
 
 // 1. 创建状态（一行代码）
 const count = atom(0);
@@ -62,9 +68,7 @@ const count = atom(0);
 function Counter() {
   const value = useAtom(count);
   return (
-    <button onClick={() => count.set(v => v + 1)}>
-      Count: {value}
-    </button>
+    <button onClick={() => count.set((v) => v + 1)}>Count: {value}</button>
   );
 }
 
@@ -94,10 +98,10 @@ console.log(count.history());
 ## 内置追踪
 
 ```typescript
-const user = atom({ name: 'Alice', age: 25 });
+const user = atom({ name: "Alice", age: 25 });
 
 user.set((prev) => ({ ...prev, age: 26 }));
-user.set((prev) => ({ ...prev, name: 'Bob' }));
+user.set((prev) => ({ ...prev, name: "Bob" }));
 
 // 查看完整变化历史
 console.log(user.history());
@@ -120,11 +124,11 @@ restore 会回到 `history[index].from`，不会新增历史记录。
 
 ```typescript
 // 客户端状态 → Singularity
-const theme = atom('dark');
+const theme = atom("dark");
 const sidebar = atom(true);
 
 // 服务端状态 → React Query
-const { data: user } = useQuery({ queryKey: ['user'] });
+const { data: user } = useQuery({ queryKey: ["user"] });
 
 // 复杂状态机 → XState
 const [state, send] = useMachine(authMachine);

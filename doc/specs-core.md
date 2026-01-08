@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 依赖 problems-vision.md 的设计理念
+[OUTPUT]: 核心 API 规格文档
+[POS]: doc/ 的技术规范，定义 atom/computed/effect/batch API
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # 核心 API 规格
 
 > **Singularity = Zustand 的简单 + Redux 的追踪 + Jotai 的细粒度**
@@ -73,7 +80,7 @@ count.set((prev) => prev + 1);
 
 // 订阅
 const unsubscribe = count.subscribe(() => {
-  console.log('changed:', count.get());
+  console.log("changed:", count.get());
 });
 
 // 查看历史（开发模式）
@@ -149,16 +156,16 @@ function effect(fn: () => void | (() => void)): Effect;
 **使用示例：**
 
 ```typescript
-const user = atom({ name: 'Alice' });
+const user = atom({ name: "Alice" });
 
 // 基础用法
 const e1 = effect(() => {
-  console.log('User:', user.get().name);
+  console.log("User:", user.get().name);
 });
 
 // 带清理函数
 const e2 = effect(() => {
-  const ws = new WebSocket('/chat');
+  const ws = new WebSocket("/chat");
   return () => ws.close(); // 清理
 });
 
@@ -212,7 +219,7 @@ function Counter() {
 
 // 带 selector（细粒度订阅）
 function UserName() {
-  const name = useAtom(userAtom, u => u.name);
+  const name = useAtom(userAtom, (u) => u.name);
   return <div>{name}</div>; // 只有 name 变化才重渲染
 }
 ```
@@ -241,13 +248,13 @@ function Display() {
 **必须使用 `useSyncExternalStore`：**
 
 ```typescript
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from "react";
 
 export function useAtom<T>(atom: Atom<T>): T {
   return useSyncExternalStore(
     atom.subscribe,
     atom.get,
-    atom.get, // SSR
+    atom.get // SSR
   );
 }
 ```
@@ -262,10 +269,10 @@ function atom<T>(initial: T): Atom<T> {
   return {
     get: () => value,
     set: (next) => {
-      const newValue = typeof next === 'function' ? next(value) : next;
+      const newValue = typeof next === "function" ? next(value) : next;
 
       // 开发模式：记录历史
-      if (process.env.NODE_ENV !== 'production') {
+      if (process.env.NODE_ENV !== "production") {
         history.push({ from: value, to: newValue, time: Date.now() });
       }
 

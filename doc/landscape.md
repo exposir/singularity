@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 无外部依赖
+[OUTPUT]: 状态管理库生态全景分析
+[POS]: doc/ 的竞品分析文档
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 ## 零、状态管理库全景图
 
 | 派系                | 库              | 作者/组织                | Stars  | 核心思想                    | 超大型项目适配 |
@@ -113,7 +120,7 @@ function createStore(reducer) {
     };
   };
 
-  dispatch({ type: '@@INIT' });
+  dispatch({ type: "@@INIT" });
   return { getState, dispatch, subscribe };
 }
 ```
@@ -133,7 +140,7 @@ function createStore(reducer) {
 ```javascript
 // RTK 的 createSlice 底层用 Immer 包装
 const slice = createSlice({
-  name: 'counter',
+  name: "counter",
   initialState: { value: 0 },
   reducers: {
     // 看起来是可变操作，实际 Immer 转为不可变
@@ -163,7 +170,7 @@ const createStore = (createState) => {
   const listeners = new Set();
 
   const setState = (partial) => {
-    const nextState = typeof partial === 'function' ? partial(state) : partial;
+    const nextState = typeof partial === "function" ? partial(state) : partial;
     if (!Object.is(nextState, state)) {
       state = Object.assign({}, state, nextState);
       listeners.forEach((l) => l(state));
@@ -231,7 +238,7 @@ const doubleAtom = atom((get) => get(countAtom) * 2);
 
 ```javascript
 // Nano Stores 极简实现
-import { atom, computed } from 'nanostores';
+import { atom, computed } from "nanostores";
 
 const count = atom(0);
 const double = computed(count, (n) => n * 2);
@@ -295,7 +302,7 @@ const observable = new Proxy(rawObject, handler);
 | **缺点**     | Proxy 的隐式行为可能导致困惑                                      |
 
 ```javascript
-import { proxy, useSnapshot } from 'valtio';
+import { proxy, useSnapshot } from "valtio";
 
 const state = proxy({ count: 0 });
 
@@ -376,25 +383,25 @@ count.value++; // effect 自动执行
 ```javascript
 // XState 状态机定义
 const machine = createMachine({
-  id: 'auth',
-  initial: 'idle',
+  id: "auth",
+  initial: "idle",
   context: { retries: 0 },
   states: {
     idle: {
-      on: { LOGIN: 'loading' },
+      on: { LOGIN: "loading" },
     },
     loading: {
       invoke: {
-        src: 'loginService',
-        onDone: 'success',
-        onError: 'failure',
+        src: "loginService",
+        onDone: "success",
+        onError: "failure",
       },
     },
-    success: { type: 'final' },
+    success: { type: "final" },
     failure: {
       on: {
         RETRY: {
-          target: 'loading',
+          target: "loading",
           actions: assign({ retries: (ctx) => ctx.retries + 1 }),
         },
       },
@@ -431,7 +438,7 @@ const machine = createMachine({
 ```javascript
 // React Query 核心概念
 const { data, isLoading, error } = useQuery({
-  queryKey: ['users', userId],
+  queryKey: ["users", userId],
   queryFn: () => fetchUser(userId),
   staleTime: 5 * 60 * 1000, // 5 分钟内不重新获取
 });
@@ -440,13 +447,13 @@ const { data, isLoading, error } = useQuery({
 useMutation({
   mutationFn: updateUser,
   onMutate: async (newData) => {
-    await queryClient.cancelQueries(['users', userId]);
-    const previous = queryClient.getQueryData(['users', userId]);
-    queryClient.setQueryData(['users', userId], newData); // 乐观更新
+    await queryClient.cancelQueries(["users", userId]);
+    const previous = queryClient.getQueryData(["users", userId]);
+    queryClient.setQueryData(["users", userId], newData); // 乐观更新
     return { previous };
   },
   onError: (err, newData, context) => {
-    queryClient.setQueryData(['users', userId], context.previous); // 回滚
+    queryClient.setQueryData(["users", userId], context.previous); // 回滚
   },
 });
 ```
@@ -489,11 +496,11 @@ useMutation({
 
 ```javascript
 // RxJS 核心概念
-const clicks$ = fromEvent(button, 'click');
+const clicks$ = fromEvent(button, "click");
 const positions$ = clicks$.pipe(
   throttleTime(1000),
   map((e) => ({ x: e.clientX, y: e.clientY })),
-  distinctUntilChanged(),
+  distinctUntilChanged()
 );
 positions$.subscribe((pos) => console.log(pos));
 ```
@@ -533,18 +540,18 @@ positions$.subscribe((pos) => console.log(pos));
 | **缺点**     | 只解决协作问题，不是通用状态管理                   |
 
 ```javascript
-import * as Y from 'yjs';
-import { WebsocketProvider } from 'y-websocket';
+import * as Y from "yjs";
+import { WebsocketProvider } from "y-websocket";
 
 const doc = new Y.Doc();
-const ymap = doc.getMap('shared-state');
+const ymap = doc.getMap("shared-state");
 
 // 本地修改自动同步到所有客户端
-ymap.set('count', 42);
+ymap.set("count", 42);
 
 // 监听远程变更
 ymap.observe((event) => {
-  console.log('Changed:', event.changes);
+  console.log("Changed:", event.changes);
 });
 ```
 
@@ -618,7 +625,7 @@ ymap.observe((event) => {
 | **缺点**     | 国内少见、API 繁琐                                                 |
 
 ```javascript
-import { createStore, createEvent, createEffect } from 'effector';
+import { createStore, createEvent, createEffect } from "effector";
 
 const increment = createEvent();
 const $counter = createStore(0).on(increment, (n) => n + 1);

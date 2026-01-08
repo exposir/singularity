@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 依赖 @singularity/core, @singularity/react API
+[OUTPUT]: @singularity/react 包的 README 文档
+[POS]: packages/react/ 的用户文档，供开发者快速上手
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # @singularity/react
 
 > Singularity 的 React 适配器

@@ -304,6 +304,7 @@ TypeScript + React + pnpm workspace
 <directory>
 packages/ - Monorepo 包目录 (2 子包: core, react)
 doc/ - 核心设计文档库 (8 文件: vision, roadmap, specs, guide...)
+devlog/ - 开发日志 (2 文件: week1, week2)
 guides/ - 开发者实用指南 (1 文件: AI 配置指南)
 .antigravity/ - Antigravity AI 配置 (1 文件: rules)
 .github/ - GitHub 平台配置 (1 文件: copilot-instructions)
@@ -324,6 +325,7 @@ CLAUDE.md - GEB 分形文档协议定义 (本文件)
 | :-------------- | :------------------------------------ | :--------------------------- |
 | `packages/`     | [CLAUDE.md](./packages/CLAUDE.md)     | @singularity/core + react    |
 | `doc/`          | [CLAUDE.md](./doc/CLAUDE.md)          | 设计规范、API 规格、竞品分析 |
+| `devlog/`       | [CLAUDE.md](./devlog/CLAUDE.md)       | 开发日志、里程碑记录         |
 | `guides/`       | [CLAUDE.md](./guides/CLAUDE.md)       | 操作手册、最佳实践           |
 | `.antigravity/` | [CLAUDE.md](./.antigravity/CLAUDE.md) | Antigravity 专属规则         |
 | `.github/`      | [CLAUDE.md](./.github/CLAUDE.md)      | GitHub Copilot 配置          |

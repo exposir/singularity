@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 依赖 specs-core.md 的 API 定义
+[OUTPUT]: 术语与常见问题文档
+[POS]: doc/ 的参考手册，解释专有术语和FAQ
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # 术语与常见问题
 
 > Singularity 相关术语解释与常见问题解答。
@@ -41,11 +48,11 @@
 
 ```typescript
 // ❌ 不做这个
-const user = atomAsync(fetchUser, { key: 'user:1' });
+const user = atomAsync(fetchUser, { key: "user:1" });
 
 // ✅ 推荐这样用
-import { useQuery } from '@tanstack/react-query';
-const { data: user } = useQuery({ queryKey: ['user'], queryFn: fetchUser });
+import { useQuery } from "@tanstack/react-query";
+const { data: user } = useQuery({ queryKey: ["user"], queryFn: fetchUser });
 ```
 
 ---
@@ -73,12 +80,12 @@ const { data: user } = useQuery({ queryKey: ['user'], queryFn: fetchUser });
 ```typescript
 // ❌ 不做这个
 const auth = machine({
-  initial: 'idle',
-  states: { idle: { on: { LOGIN: 'loading' } } },
+  initial: "idle",
+  states: { idle: { on: { LOGIN: "loading" } } },
 });
 
 // ✅ 推荐这样用
-import { createMachine, useMachine } from '@xstate/react';
+import { createMachine, useMachine } from "@xstate/react";
 const authMachine = createMachine({
   /* ... */
 });
@@ -109,14 +116,14 @@ const [state, send] = useMachine(authMachine);
 
 ```typescript
 // ❌ 不做这个
-const doc = atomSync({ title: '', content: '' }, { id: 'doc:1' });
+const doc = atomSync({ title: "", content: "" }, { id: "doc:1" });
 
 // ✅ 推荐这样用
-import * as Y from 'yjs';
-import { WebsocketProvider } from 'y-websocket';
+import * as Y from "yjs";
+import { WebsocketProvider } from "y-websocket";
 
 const ydoc = new Y.Doc();
-const provider = new WebsocketProvider('wss://...', 'room', ydoc);
+const provider = new WebsocketProvider("wss://...", "room", ydoc);
 ```
 
 ---
@@ -125,20 +132,20 @@ const provider = new WebsocketProvider('wss://...', 'room', ydoc);
 
 ```typescript
 // 客户端状态 → Singularity
-import { atom, useAtom } from '@singularity/core';
-const theme = atom('dark');
+import { atom, useAtom } from "@singularity/core";
+const theme = atom("dark");
 const sidebar = atom(true);
 
 // 服务端状态 → React Query
-import { useQuery, useMutation } from '@tanstack/react-query';
-const { data: user } = useQuery({ queryKey: ['user'] });
+import { useQuery, useMutation } from "@tanstack/react-query";
+const { data: user } = useQuery({ queryKey: ["user"] });
 
 // 复杂状态机 → XState
-import { useMachine } from '@xstate/react';
+import { useMachine } from "@xstate/react";
 const [state, send] = useMachine(authMachine);
 
 // 实时协作 → Yjs
-import * as Y from 'yjs';
+import * as Y from "yjs";
 const ydoc = new Y.Doc();
 ```
 
@@ -197,7 +204,7 @@ Redux 功能强大但复杂（Action/Reducer），Singularity 保持简单（一
 **A**: 不会。生产模式下追踪功能完全禁用：
 
 ```typescript
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   // 只在开发模式记录
 }
 ```
@@ -250,7 +257,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 ```typescript
 // 只在开发模式记录
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   history.push({ from, to, time });
   if (history.length > 100) history.shift();
 }

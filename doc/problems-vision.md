@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 无外部依赖
+[OUTPUT]: 核心问题与愿景文档
+[POS]: doc/ 的愿景定义，阐述为何需要 Singularity
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # 核心问题与愿景
 
 > 为什么需要 Singularity？它要解决什么问题？
@@ -30,8 +37,7 @@
 | 给 Zustand 加细粒度 | ❌ **不能**      | 架构决定（单 store + selector） |
 | 给 Jotai 简化 API   | ❌ **不能**      | 原子组合是核心设计哲学          |
 
-> **Zustand 的「非细粒度」是架构问题，不是功能问题。**
-> **Jotai 的「原子组合」是设计哲学，不是可选配置。**
+> **Zustand 的「非细粒度」是架构问题，不是功能问题。** > **Jotai 的「原子组合」是设计哲学，不是可选配置。**
 
 **所以需要从底层架构重新设计，这就是 Singularity。**
 
@@ -53,7 +59,7 @@ PM：这个用户名为什么是 Bob？
 ```typescript
 // Redux 写一个计数器需要：
 // 1. 定义 Action Type
-const INCREMENT = 'INCREMENT';
+const INCREMENT = "INCREMENT";
 
 // 2. 定义 Action Creator
 const increment = () => ({ type: INCREMENT });
@@ -115,14 +121,17 @@ console.log(count.history());
 ### 四个原则
 
 1. **可解释性 > 自由度**
+
    - 开发者可以随意写状态
    - 但系统必须能解释「为什么变成这样」
 
 2. **因果闭环 > 局部便利**
+
    - 每次变更都有完整链条：触发 → 变化 → 记录
    - 不允许「无迹可寻」的状态突变
 
 3. **开箱即用 > 需要配置**
+
    - 追踪默认开启
    - 不需要安装 DevTools 扩展
 

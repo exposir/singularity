@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 无外部依赖
+[OUTPUT]: Singularity 项目主 README
+[POS]: 项目根目录的入口文档，用于 GitHub/NPM 展示
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # Singularity
 
 > **"Born Simple, Born Traceable"**

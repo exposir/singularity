@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 无外部依赖
+[OUTPUT]: 设计原则与路线图文档
+[POS]: doc/ 的设计规范，定义技术选型与实施路径
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # 设计与路线图
 
 > **Singularity = Zustand 的简单 + Redux 的追踪 + Jotai 的细粒度**
@@ -55,13 +62,13 @@
 **强制使用 `useSyncExternalStore`**，保证并发模式兼容：
 
 ```typescript
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from "react";
 
 export function useAtom<T>(atom: Atom<T>): T {
   return useSyncExternalStore(
     atom.subscribe,
     atom.get,
-    atom.get, // SSR
+    atom.get // SSR
   );
 }
 ```
@@ -70,7 +77,7 @@ export function useAtom<T>(atom: Atom<T>): T {
 
 ```typescript
 // 开发模式：记录变化
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   history.push({
     from: oldValue,
     to: newValue,

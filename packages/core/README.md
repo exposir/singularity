@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 依赖 @singularity/core API
+[OUTPUT]: @singularity/core 包的 README 文档
+[POS]: packages/core/ 的用户文档，供开发者快速上手
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # @singularity/core
 
 > 天生简单，天生可追踪的状态管理核心

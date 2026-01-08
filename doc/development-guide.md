@@ -1,3 +1,10 @@
+<!--
+[INPUT]: 依赖 specs-core.md 的 API 规格
+[OUTPUT]: 开发实施文档
+[POS]: doc/ 的核心开发指南，包含完整代码实现
+[PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+-->
+
 # 开发实施文档
 
 > 本文档是 Singularity 的**唯一开发指南**，阅读后可直接开始编码。
@@ -68,18 +75,18 @@ packages/
 
 ### 2.2 第三方库
 
-| 包名                   | 用途              | 必需 |
-| :--------------------- | :---------------- | :--- |
-| `typescript`           | 类型检查          | ✅   |
-| `tsup`                 | 打包构建          | ✅   |
-| `vitest`               | 单元测试          | ✅   |
-| `react`                | React 适配器      | ✅   |
-| `react-dom`            | React 渲染        | ✅   |
-| `@types/react`         | React 类型        | ✅   |
-| `@types/react-dom`     | React DOM 类型    | ✅   |
+| 包名                     | 用途            | 必需 |
+| :----------------------- | :-------------- | :--- |
+| `typescript`             | 类型检查        | ✅   |
+| `tsup`                   | 打包构建        | ✅   |
+| `vitest`                 | 单元测试        | ✅   |
+| `react`                  | React 适配器    | ✅   |
+| `react-dom`              | React 渲染      | ✅   |
+| `@types/react`           | React 类型      | ✅   |
+| `@types/react-dom`       | React DOM 类型  | ✅   |
 | `@testing-library/react` | React Hook 测试 | ✅   |
-| `jsdom`                | 测试 DOM 环境     | ✅   |
-| `tsx`                  | 运行 TS 脚本      | ✅   |
+| `jsdom`                  | 测试 DOM 环境   | ✅   |
+| `tsx`                    | 运行 TS 脚本    | ✅   |
 
 ### 2.3 开发工具
 
@@ -221,8 +228,8 @@ flowchart LR
 ### 3.1 atom.ts
 
 ```typescript
-import { trackDependency, assertWritable } from './trace';
-import { isBatching, schedulePendingUpdate } from './batch';
+import { trackDependency, assertWritable } from "./trace";
+import { isBatching, schedulePendingUpdate } from "./batch";
 
 type Listener = () => void;
 
@@ -255,12 +262,12 @@ export function atom<T>(initial: T) {
     set(next: T | ((prev: T) => T)) {
       assertWritable();
       const newValue =
-        typeof next === 'function' ? (next as (prev: T) => T)(value) : next;
+        typeof next === "function" ? (next as (prev: T) => T)(value) : next;
 
       if (Object.is(value, newValue)) return;
 
       // 开发模式：记录历史
-      if (process.env.NODE_ENV !== 'production') {
+      if (process.env.NODE_ENV !== "production") {
         history.push({ from: value, to: newValue, time: Date.now() });
         if (history.length > 100) history.shift(); // 限制长度
       }
@@ -304,14 +311,14 @@ export type Atom<T> = ReturnType<typeof atom<T>>;
 ### 3.2 computed.ts
 
 ```typescript
-import { Tracker, startTracking, stopTracking, trackDependency } from './trace';
+import { Tracker, startTracking, stopTracking, trackDependency } from "./trace";
 
 let computedId = 0;
 const computingStack: string[] = [];
 
 function enterComputed(id: string): void {
   if (computingStack.includes(id)) {
-    const chain = [...computingStack, id].join(' -> ');
+    const chain = [...computingStack, id].join(" -> ");
     throw new Error(`Circular dependency detected: ${chain}`);
   }
   computingStack.push(id);
@@ -348,7 +355,7 @@ export function computed<T>(read: () => T) {
         tracker.cleanup();
 
         enterComputed(id);
-        startTracking(tracker, 'computed');
+        startTracking(tracker, "computed");
         try {
           cachedValue = read();
         } finally {
@@ -374,7 +381,7 @@ export type Computed<T> = ReturnType<typeof computed<T>>;
 ### 3.3 effect.ts
 
 ```typescript
-import { Tracker, startTracking, stopTracking } from './trace';
+import { Tracker, startTracking, stopTracking } from "./trace";
 
 let effectId = 0;
 
@@ -395,7 +402,7 @@ export function effect(fn: () => void | (() => void)) {
     // 清理旧的依赖订阅
     tracker.cleanup();
 
-    startTracking(tracker, 'effect');
+    startTracking(tracker, "effect");
     try {
       cleanup = fn();
     } finally {
@@ -454,14 +461,14 @@ export function schedulePendingUpdate(fn: () => void): void {
 
 ```typescript
 // packages/core/src/index.ts
-export { atom, type Atom } from './atom';
-export { computed, type Computed } from './computed';
-export { effect, type Effect } from './effect';
-export { batch } from './batch';
+export { atom, type Atom } from "./atom";
+export { computed, type Computed } from "./computed";
+export { effect, type Effect } from "./effect";
+export { batch } from "./batch";
 
 // packages/react/src/index.ts
-export { useAtom } from './useAtom';
-export { useAtomValue } from './useAtomValue';
+export { useAtom } from "./useAtom";
+export { useAtomValue } from "./useAtomValue";
 ```
 
 ### 3.6 trace.ts（依赖追踪）
@@ -469,7 +476,7 @@ export { useAtomValue } from './useAtomValue';
 ```typescript
 type Unsubscribe = () => void;
 type OnInvalidate = () => void;
-type TrackingKind = 'computed' | 'effect';
+type TrackingKind = "computed" | "effect";
 
 // 当前正在追踪的 Tracker
 let currentTracker: Tracker | null = null;
@@ -515,8 +522,8 @@ export function stopTracking(): void {
 }
 
 export function assertWritable(): void {
-  if (currentKind === 'computed') {
-    throw new Error('Writes are not allowed inside computed().');
+  if (currentKind === "computed") {
+    throw new Error("Writes are not allowed inside computed().");
   }
 }
 
@@ -539,14 +546,14 @@ export function trackDependency(node: any): void {
 ### 4.1 useAtom.ts
 
 ```typescript
-import { useSyncExternalStore, useCallback, useRef } from 'react';
-import type { Atom, Computed } from '@singularity/core';
+import { useSyncExternalStore, useCallback, useRef } from "react";
+import type { Atom, Computed } from "@singularity/core";
 
 export function useAtom<T>(atom: Atom<T> | Computed<T>): T;
 export function useAtom<T, R>(atom: Atom<T>, selector: (value: T) => R): R;
 export function useAtom<T, R>(
   atom: Atom<T> | Computed<T>,
-  selector?: (value: T) => R,
+  selector?: (value: T) => R
 ): T | R {
   // 稳定 selector 引用，避免每次渲染创建新函数
   const selectorRef = useRef(selector);
@@ -557,13 +564,13 @@ export function useAtom<T, R>(
       const value = atom.get();
       return selectorRef.current ? selectorRef.current(value) : value;
     },
-    [atom], // selector 通过 ref 引用，不需要作为依赖
+    [atom] // selector 通过 ref 引用，不需要作为依赖
   );
 
   return useSyncExternalStore(
     atom.subscribe,
     getSnapshot,
-    getSnapshot, // SSR
+    getSnapshot // SSR
   );
 }
 ```
@@ -571,8 +578,8 @@ export function useAtom<T, R>(
 ### 4.2 useAtomValue.ts
 
 ```typescript
-import { useSyncExternalStore } from 'react';
-import type { Atom, Computed } from '@singularity/core';
+import { useSyncExternalStore } from "react";
+import type { Atom, Computed } from "@singularity/core";
 
 export function useAtomValue<T>(atom: Atom<T> | Computed<T>): T {
   return useSyncExternalStore(atom.subscribe, atom.get, atom.get);
@@ -587,8 +594,8 @@ export function useAtomValue<T>(atom: Atom<T> | Computed<T>): T {
 
 ```typescript
 // packages/vue/src/useAtom.ts（规划代码）
-import { customRef, onUnmounted } from 'vue';
-import type { Atom, Computed } from '@singularity/core';
+import { customRef, onUnmounted } from "vue";
+import type { Atom, Computed } from "@singularity/core";
 
 export function useAtom<T>(atom: Atom<T> | Computed<T>) {
   return customRef<T>((track, trigger) => {
@@ -606,7 +613,7 @@ export function useAtom<T>(atom: Atom<T> | Computed<T>) {
         return atom.get();
       },
       set(value: T) {
-        if ('set' in atom) atom.set(value);
+        if ("set" in atom) atom.set(value);
       },
     };
   });
@@ -617,8 +624,8 @@ export function useAtom<T>(atom: Atom<T> | Computed<T>) {
 
 ```vue
 <script setup>
-import { atom } from '@singularity/core';
-import { useAtom } from '@singularity/vue';
+import { atom } from "@singularity/core";
+import { useAtom } from "@singularity/vue";
 
 const countAtom = atom(0);
 const count = useAtom(countAtom);
@@ -642,24 +649,24 @@ const count = useAtom(countAtom);
 ### 6.1 atom 测试
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { atom } from '../src/atom';
+import { describe, it, expect } from "vitest";
+import { atom } from "../src/atom";
 
-describe('atom', () => {
-  it('should get and set value', () => {
+describe("atom", () => {
+  it("should get and set value", () => {
     const count = atom(0);
     expect(count.get()).toBe(0);
     count.set(1);
     expect(count.get()).toBe(1);
   });
 
-  it('should support functional update', () => {
+  it("should support functional update", () => {
     const count = atom(0);
     count.set((prev) => prev + 1);
     expect(count.get()).toBe(1);
   });
 
-  it('should notify subscribers', () => {
+  it("should notify subscribers", () => {
     const count = atom(0);
     let called = 0;
     count.subscribe(() => called++);
@@ -667,14 +674,14 @@ describe('atom', () => {
     expect(called).toBe(1);
   });
 
-  it('should record history in dev mode', () => {
+  it("should record history in dev mode", () => {
     const count = atom(0);
     count.set(1);
     count.set(2);
     expect(count.history()).toHaveLength(2);
   });
 
-  it('should restore without adding history', () => {
+  it("should restore without adding history", () => {
     const count = atom(0);
     count.set(1);
     count.set(2);
@@ -689,15 +696,15 @@ describe('atom', () => {
 ### 6.2 computed 测试
 
 ```typescript
-describe('computed', () => {
-  it('should compute derived value', () => {
+describe("computed", () => {
+  it("should compute derived value", () => {
     const a = atom(1);
     const b = atom(2);
     const sum = computed(() => a.get() + b.get());
     expect(sum.get()).toBe(3);
   });
 
-  it('should update when dependencies change', () => {
+  it("should update when dependencies change", () => {
     const a = atom(1);
     const double = computed(() => a.get() * 2);
     expect(double.get()).toBe(2);
@@ -705,7 +712,7 @@ describe('computed', () => {
     expect(double.get()).toBe(10);
   });
 
-  it('should throw on circular dependency', () => {
+  it("should throw on circular dependency", () => {
     let a: any;
     let b: any;
     a = computed(() => b.get());
@@ -713,7 +720,7 @@ describe('computed', () => {
     expect(() => a.get()).toThrow(/Circular dependency/);
   });
 
-  it('should throw on writes inside computed', () => {
+  it("should throw on writes inside computed", () => {
     const count = atom(0);
     const bad = computed(() => {
       count.set(1);
@@ -727,8 +734,8 @@ describe('computed', () => {
 ### 6.3 batch 测试
 
 ```typescript
-describe('batch', () => {
-  it('should batch updates', () => {
+describe("batch", () => {
+  it("should batch updates", () => {
     const a = atom(0);
     const b = atom(0);
     let calls = 0;
@@ -755,13 +762,13 @@ describe('batch', () => {
 ### 6.4 React Hook 测试
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import { atom, computed } from '@singularity/core';
-import { useAtom, useAtomValue } from '../src';
+import { describe, it, expect } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import { atom, computed } from "@singularity/core";
+import { useAtom, useAtomValue } from "../src";
 
-describe('react hooks', () => {
-  it('useAtom should return value and update', () => {
+describe("react hooks", () => {
+  it("useAtom should return value and update", () => {
     const count = atom(0);
     const { result } = renderHook(() => useAtom(count));
     expect(result.current).toBe(0);
@@ -772,7 +779,7 @@ describe('react hooks', () => {
     expect(result.current).toBe(1);
   });
 
-  it('useAtomValue should work with computed', () => {
+  it("useAtomValue should work with computed", () => {
     const count = atom(2);
     const double = computed(() => count.get() * 2);
     const { result } = renderHook(() => useAtomValue(double));
@@ -792,28 +799,28 @@ describe('react hooks', () => {
 
 ```typescript
 // benchmark.ts
-import { atom, computed } from '@singularity/core';
+import { atom, computed } from "@singularity/core";
 
 const iterations = 10000;
 
 // 测试 atom 读写
-console.time('atom read/write');
+console.time("atom read/write");
 const count = atom(0);
 for (let i = 0; i < iterations; i++) {
   count.set(i);
   count.get();
 }
-console.timeEnd('atom read/write');
+console.timeEnd("atom read/write");
 
 // 测试 computed
-console.time('computed');
+console.time("computed");
 const a = atom(0);
 const b = computed(() => a.get() * 2);
 for (let i = 0; i < iterations; i++) {
   a.set(i);
   b.get();
 }
-console.timeEnd('computed');
+console.timeEnd("computed");
 ```
 
 **目标**：不低于 Jotai 80% 性能
@@ -870,7 +877,7 @@ pnpm add -D @testing-library/react jsdom -w
 **检查清单**：
 
 - [ ] 导出 `Tracker`, `startTracking`, `stopTracking`, `trackDependency`,
-  `assertWritable`
+      `assertWritable`
 
 #### Day 5-7：实现 atom.ts + 测试
 
@@ -1042,7 +1049,7 @@ Vite 模板会生成额外文件（如 `vite.config.ts`），这里只展示关�
 创建 `examples/counter/src/store.ts`：
 
 ```typescript
-import { atom, computed } from '@singularity/core';
+import { atom, computed } from "@singularity/core";
 
 export const count = atom(0);
 export const double = computed(() => count.get() * 2);
@@ -1051,8 +1058,8 @@ export const double = computed(() => count.get() * 2);
 覆盖 `examples/counter/src/App.tsx`：
 
 ```tsx
-import { useAtom } from '@singularity/react';
-import { count, double } from './store';
+import { useAtom } from "@singularity/react";
+import { count, double } from "./store";
 
 export function App() {
   const value = useAtom(count);
@@ -1060,9 +1067,7 @@ export function App() {
 
   return (
     <div>
-      <button onClick={() => count.set((v) => v + 1)}>
-        Count: {value}
-      </button>
+      <button onClick={() => count.set((v) => v + 1)}>Count: {value}</button>
       <div>Double: {twice}</div>
     </div>
   );
@@ -1072,17 +1077,17 @@ export function App() {
 覆盖 `examples/counter/src/main.tsx`：
 
 ```tsx
-import { createRoot } from 'react-dom/client';
-import { App } from './App';
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
 
-const root = createRoot(document.getElementById('root')!);
+const root = createRoot(document.getElementById("root")!);
 root.render(<App />);
 ```
 
 确认 `examples/counter/index.html`：
 
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
